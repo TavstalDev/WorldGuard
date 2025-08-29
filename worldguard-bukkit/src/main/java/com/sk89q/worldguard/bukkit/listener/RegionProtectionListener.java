@@ -113,7 +113,7 @@ public class RegionProtectionListener extends AbstractListener {
             if (lastTime == null || now - lastTime >= LAST_MESSAGE_DELAY) {
                 RegionQuery query = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
                 LocalPlayer localPlayer = getPlugin().wrapPlayer(player);
-                String message = query.queryValue(BukkitAdapter.adapt(location), localPlayer, Flags.DENY_MESSAGE);
+                String message = query.queryValue(BukkitAdapter.adapt(location), localPlayer, WorldGuard.getInstance().getPlatform().getGlobalStateManager().denyMessageFlag);
                 formatAndSendDenyMessage(what, localPlayer, message);
                 WGMetadata.put(player, DENY_MESSAGE_KEY, now);
             }
@@ -185,16 +185,16 @@ public class RegionProtectionListener extends AbstractListener {
                 if (fire) flags.add(Flags.FIRE_SPREAD);
                 if (lava) flags.add(Flags.LAVA_FIRE);
                 canPlace = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, flags.toArray(new StateFlag[flags.size()])));
-                what = "place fire";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().placeFire;
 
             } else if (type == Material.FROSTED_ICE) {
                 event.setSilent(true); // gets spammy
                 canPlace = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.BLOCK_PLACE, Flags.FROSTED_ICE_FORM));
-                what = "use frostwalker"; // hidden anyway
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().useFrostWalker; // hidden anyway
             /* Everything else */
             } else {
                 canPlace = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.BLOCK_PLACE));
-                what = "place that block";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().placeThatBlock;
             }
 
             if (!canPlace) {
@@ -224,12 +224,12 @@ public class RegionProtectionListener extends AbstractListener {
                 /* TNT */
                 if (event.getCause().find(EntityType.TNT, EntityType.TNT_MINECART) != null) {
                     canBreak = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.BLOCK_BREAK, Flags.TNT));
-                    what = "use dynamite";
+                    what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().useDynamite;
 
                 /* Everything else */
                 } else {
                     canBreak = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.BLOCK_BREAK));
-                    what = "break that block";
+                    what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().breakThatBlock;
                 }
 
                 if (!canBreak) {
@@ -259,47 +259,47 @@ public class RegionProtectionListener extends AbstractListener {
             /* Saplings, etc. */
             if (Materials.isConsideredBuildingIfUsed(type)) {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event));
-                what = "use that";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().useThat;
 
             /* Inventory */
             } else if (Materials.isInventoryBlock(type)) {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.CHEST_ACCESS));
-                what = "open that";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().openThat;
 
             /* Inventory for blocks with the possibility to be only use, e.g. lectern */
             } else if (handleAsInventoryUsage(event.getOriginalEvent())) {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.CHEST_ACCESS));
-                what = "take that";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().takeThat;
 
             /* Anvils */
             } else if (Materials.isAnvil(type)) {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.USE_ANVIL));
-                what = "use that";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().useThat;
 
             /* Beds */
             } else if (Materials.isBed(type)) {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.INTERACT, Flags.SLEEP));
-                what = "sleep";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().sleep;
 
             /* Respawn Anchors */
             } else if(type == Material.RESPAWN_ANCHOR) {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.INTERACT, Flags.RESPAWN_ANCHORS));
-                what = "use anchors";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().useAnchors;
 
             /* TNT */
             } else if (type == Material.TNT) {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.INTERACT, Flags.TNT));
-                what = "use explosives";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().useExplosives;
 
             /* Legacy USE flag */
             } else if (Materials.isUseFlagApplicable(type)) {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.INTERACT, Flags.USE));
-                what = "use that";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().useThat;
 
             /* Everything else */
             } else {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.INTERACT));
-                what = "use that";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().useThat;
             }
 
             if (!canUse) {
@@ -329,26 +329,26 @@ public class RegionProtectionListener extends AbstractListener {
         /* Vehicles */
         if (Entities.isVehicle(type)) {
             canSpawn = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.PLACE_VEHICLE));
-            what = "place vehicles";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().placeVehicles;
 
         /* Item pickup */
         } else if (event.getEntity() instanceof Item) {
             canSpawn = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.ITEM_DROP));
-            what = "drop items";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().dropItems;
 
         /* XP drops */
         } else if (type == EntityType.EXPERIENCE_ORB) {
             canSpawn = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.EXP_DROPS));
-            what = "drop XP";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().dropXp;
 
         } else if (Entities.isAoECloud(type)) {
             canSpawn = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.POTION_SPLASH));
-            what = "use lingering potions";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().useLingeringPotions;
 
         /* Everything else */
         } else {
             canSpawn = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event));
-            what = "place things";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().placeThings;
         }
 
         if (!canSpawn) {
@@ -374,17 +374,17 @@ public class RegionProtectionListener extends AbstractListener {
         /* Vehicles */
         if (Entities.isVehicle(type)) {
             canDestroy = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.DESTROY_VEHICLE));
-            what = "break vehicles";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().breakVehicles;
 
         /* Item pickup */
         } else if (event.getEntity() instanceof Item || event.getEntity() instanceof ExperienceOrb) {
             canDestroy = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.ITEM_PICKUP));
-            what = "pick up items";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().pickUpItems;
 
         /* Everything else */
         } else {
             canDestroy = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event));
-            what = "break things";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().breakThings;
         }
 
         if (!canDestroy) {
@@ -412,7 +412,7 @@ public class RegionProtectionListener extends AbstractListener {
         if (Entities.isHostile(entity) || Entities.isAmbient(entity)
                 || Entities.isNPC(entity) || entity instanceof Player) {
             canUse = event.getRelevantFlags().isEmpty() || query.queryState(BukkitAdapter.adapt(target), associable, combine(event)) != State.DENY;
-            what = "use that";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().useThat;
         /* Paintings, item frames, etc. */
         } else if (Entities.isConsideredBuildingIfUsed(entity)
                 // weird case since sneak+interact is chest access and not ride
@@ -421,29 +421,29 @@ public class RegionProtectionListener extends AbstractListener {
                     && event.getCause().getFirstPlayer() != null
                     && ((ItemFrame) entity).getItem().getType() != Material.AIR) {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.ITEM_FRAME_ROTATE));
-                what = "change that";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().changeThat;
             } else if (event.getOriginalEvent() instanceof InventoryOpenEvent || event.getOriginalEvent() instanceof InventoryMoveItemEvent) {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.CHEST_ACCESS));
-                what = "open that";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().openThat;
             } else {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event));
-                what = "change that";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().changeThat;
             }
         /* Ridden on use */
         } else if (Entities.isRiddenOnUse(entity)) {
             if (event.getOriginalEvent() instanceof PlayerLeashEntityEvent) {
                 canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event));
-                what = "use that";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().useThat;
             } else {
                 // this is bypassed here as it's handled by the entity mount listener below
                 // bukkit actually gives three events in this case - in order: PlayerInteractAtEntity, VehicleEnter, EntityMount
                 canUse = true;
-                what = "ride that";
+                what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().rideThat;
             }
         /* Everything else */
         } else {
             canUse = query.testBuild(BukkitAdapter.adapt(target), associable, combine(event, Flags.INTERACT));
-            what = "use that";
+            what =  WorldGuard.getInstance().getPlatform().getGlobalStateManager().useThat;
         }
 
         if (!canUse) {
@@ -477,14 +477,14 @@ public class RegionProtectionListener extends AbstractListener {
         /* Hostile / ambient mob override */
         if (Entities.isHostile(event.getEntity()) || Entities.isAmbient(event.getEntity())) {
             canDamage = event.getRelevantFlags().isEmpty() || query.queryState(target, associable, combine(event)) != State.DENY;
-            what = "hit that";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().hitThat;
         } else if (Entities.isVehicle(event.getEntity().getType())) {
             canDamage = query.testBuild(target, associable, combine(event, Flags.DESTROY_VEHICLE));
-            what = "change that";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().changeThat;
         /* Paintings, item frames, etc. */
         } else if (Entities.isConsideredBuildingIfUsed(event.getEntity())) {
             canDamage = query.testBuild(target, associable, combine(event));
-            what = "change that";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().changeThat;
 
         /* PVP */
         } else if (pvp) {
@@ -505,22 +505,22 @@ public class RegionProtectionListener extends AbstractListener {
                 canDamage = true;
             }
 
-            what = "PvP";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().pvp;
 
         /* Player damage not caused  by another player */
         } else if (event.getEntity() instanceof Player) {
             canDamage = event.getRelevantFlags().isEmpty() || query.queryState(target, associable, combine(event)) != State.DENY;
-            what = "damage that";
+            what = WorldGuard.getInstance().getPlatform().getGlobalStateManager().damageThat;
 
         /* damage to non-hostile mobs (e.g. animals) */
         } else if (Entities.isNonHostile(event.getEntity())) {
             canDamage = query.testBuild(target, associable, combine(event, Flags.DAMAGE_ANIMALS));
-            what = "harm that";
+            what =  WorldGuard.getInstance().getPlatform().getGlobalStateManager().harmThat;
 
         /* Everything else */
         } else {
             canDamage = query.testBuild(target, associable, combine(event, Flags.INTERACT));
-            what = "hit that";
+            what =  WorldGuard.getInstance().getPlatform().getGlobalStateManager().hitThat;
         }
 
         if (!canDamage) {
@@ -546,7 +546,7 @@ public class RegionProtectionListener extends AbstractListener {
         if (!query.testBuild(BukkitAdapter.adapt(location), localPlayer, Flags.RIDE, Flags.INTERACT)) {
             event.setCancelled(true);
             DelegateEvent dummy = new UseEntityEvent(event, cause, vehicle);
-            tellErrorMessage(dummy, cause, vehicle.getLocation(), "ride that");
+            tellErrorMessage(dummy, cause, vehicle.getLocation(), WorldGuard.getInstance().getPlatform().getGlobalStateManager().rideThat);
         }
     }
 

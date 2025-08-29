@@ -21,6 +21,7 @@ package com.sk89q.worldguard.protection;
 
 import com.google.common.collect.ImmutableList;
 import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.association.RegionAssociable;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.Flag;
@@ -61,7 +62,7 @@ public class FailedLoadRegionSet extends AbstractRegionSet {
     public <V> V queryValue(@Nullable RegionAssociable subject, Flag<V> flag) {
         if (flag == Flags.BUILD) {
             return (V) State.DENY;
-        } else if (flag == Flags.DENY_MESSAGE) {
+        } else if (flag == WorldGuard.getInstance().getPlatform().getGlobalStateManager().denyMessageFlag) {
             return (V) denyMessage;
         }
         return flag.getDefault();
@@ -85,7 +86,7 @@ public class FailedLoadRegionSet extends AbstractRegionSet {
     public <V> Collection<V> queryAllValues(@Nullable RegionAssociable subject, Flag<V> flag) {
         if (flag == Flags.BUILD) {
             return (Collection<V>) ImmutableList.of(State.DENY);
-        } else if (flag == Flags.DENY_MESSAGE) {
+        } else if (flag == WorldGuard.getInstance().getPlatform().getGlobalStateManager().denyMessageFlag) {
             return (Collection<V>) denyMessageCollection;
         }
         V fallback = flag.getDefault();

@@ -22,6 +22,7 @@ package com.sk89q.worldguard.session.handler;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.commands.CommandUtils;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
@@ -53,7 +54,7 @@ public class EntryFlag extends Handler {
         boolean allowed = toSet.testState(player, Flags.ENTRY);
 
         if (!getSession().getManager().hasBypass(player, (World) to.getExtent()) && !allowed && moveType.isCancellable()) {
-            String message = toSet.queryValue(player, Flags.ENTRY_DENY_MESSAGE);
+            String message = toSet.queryValue(player, WorldGuard.getInstance().getPlatform().getGlobalStateManager().entryDenyMessageFlag);
             long now = System.currentTimeMillis();
 
             if ((now - lastMessage) > MESSAGE_THRESHOLD && message != null && !message.isEmpty()) {

@@ -22,6 +22,7 @@ package com.sk89q.worldguard.config;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.StringFlag;
 import com.sk89q.worldguard.protection.managers.storage.DriverType;
 import com.sk89q.worldguard.protection.managers.storage.RegionDriver;
 import com.sk89q.worldguard.session.handler.WaterBreathing;
@@ -79,6 +80,44 @@ public abstract class ConfigurationManager {
     public boolean disablePermissionCache;
     public boolean disableDefaultBypass;
     public boolean announceBypassStatus;
+
+    public String denyMessage;
+    public String entryDenyMessage;
+    public String exitDenyMessage;
+
+    public String useThat;
+    public String openThat;
+    public String takeThat;
+    public String sleep;
+    public String useAnchors;
+    public String useExplosives;
+    public String placeVehicles;
+    public String dropItems;
+    public String dropXp;
+    public String useLingeringPotions;
+    public String placeThings;
+    public String breakVehicles;
+    public String pickUpItems;
+    public String breakThings;
+    public String changeThat;
+    public String hitThat;
+    public String pvp;
+    public String damageThat;
+    public String harmThat;
+    public String rideThat;
+    public String placeFire;
+    public String useFrostWalker;
+    public String placeThatBlock;
+    public String useThatBlock;
+    public String breakThatBlock;
+    public String useDynamite;
+
+    @Unreported
+    public StringFlag denyMessageFlag;
+    @Unreported
+    public StringFlag entryDenyMessageFlag;
+    @Unreported
+    public StringFlag exitDEnyMessageFlag;
 
     @Unreported public Map<String, String> hostKeys = new HashMap<>();
     public boolean hostKeysAllowFMLClients;

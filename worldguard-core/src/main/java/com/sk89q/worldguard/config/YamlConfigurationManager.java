@@ -22,11 +22,12 @@ package com.sk89q.worldguard.config;
 import com.google.common.collect.ImmutableMap;
 import com.sk89q.util.yaml.YAMLFormat;
 import com.sk89q.util.yaml.YAMLProcessor;
+import com.sk89q.worldedit.util.report.Unreported;
+import com.sk89q.worldguard.protection.flags.StringFlag;
 import com.sk89q.worldguard.protection.managers.storage.DriverType;
 import com.sk89q.worldguard.protection.managers.storage.RegionDriver;
 import com.sk89q.worldguard.protection.managers.storage.file.DirectoryYamlDriver;
 import com.sk89q.worldguard.protection.managers.storage.sql.SQLDriver;
-import com.sk89q.worldedit.util.report.Unreported;
 import com.sk89q.worldguard.util.sql.DataSourceConfig;
 
 import java.io.File;
@@ -83,6 +84,45 @@ public abstract class YamlConfigurationManager extends ConfigurationManager {
             }
         }
         hostKeysAllowFMLClients = config.getBoolean("security.host-keys-allow-forge-clients", false);
+
+        // ====================================================================
+        // Custom Messages
+        // ====================================================================
+
+        denyMessage = config.getString("messages.deny-message", "&c&lHey! &7Sorry, but you can't %what% here.");
+        denyMessageFlag = new StringFlag("deny-message", denyMessage);
+        entryDenyMessage = config.getString("messages.entry-deny-message", "&c&lHey! &7You are not permitted to enter this area.");
+        entryDenyMessageFlag = new StringFlag("entry-deny-message", entryDenyMessage);
+        exitDenyMessage = config.getString("messages.exit-deny-message", "&c&lHey! &7You are not permitted to leave this area.");
+        exitDEnyMessageFlag = new StringFlag("exit-deny-message", exitDenyMessage);
+
+        useThat = config.getString("messages.use-that", "use that");
+        openThat = config.getString("messages.open-that", "open that");
+        takeThat = config.getString("messages.take-that", "take that");
+        sleep = config.getString("messages.sleep", "sleep");
+        useAnchors = config.getString("messages.use-anchors", "use anchors");
+        useExplosives = config.getString("messages.use-explosives", "use explosives");
+        placeVehicles = config.getString("messages.place-vehicles", "place vehicles");
+        dropItems = config.getString("messages.drop-items", "drop items");
+        dropXp = config.getString("messages.drop-xp", "drop xp");
+        useLingeringPotions = config.getString("messages.use-lingering-potions", "use lingering potions");
+        placeThings = config.getString("messages.place-things", "place things");
+        breakVehicles = config.getString("messages.break-vehicles", "break vehicles");
+        pickUpItems = config.getString("messages.pick-up-items", "pick up items");
+        breakThings = config.getString("messages.break-things", "break things");
+        changeThat = config.getString("messages.change-that", "change that");
+        hitThat = config.getString("messages.hit-that", "hit that");
+        pvp = config.getString("messages.pvp", "engage in pvp");
+        damageThat = config.getString("messages.damage-that", "damage that");
+        harmThat = config.getString("messages.harm-that", "harm that");
+        rideThat = config.getString("messages.ride-that", "ride that");
+        placeFire = config.getString("messages.place-fire", "place fire");
+        useFrostWalker = config.getString("messages.use-frost-walker", "use frost walker");
+        placeThatBlock = config.getString("messages.place-that-block", "place that block");
+        useThatBlock = config.getString("messages.use-that-block", "use that block");
+        breakThatBlock = config.getString("messages.break-that-block", "break that block");
+        useDynamite = config.getString("messages.use-dynamite", "use dynamite");
+
 
         // ====================================================================
         // Region store drivers

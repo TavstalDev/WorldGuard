@@ -19,10 +19,8 @@
 
 package com.sk89q.worldguard.protection.flags;
 
-import com.google.common.collect.Sets;
 import com.sk89q.worldedit.util.formatting.text.TextComponent;
 import com.sk89q.worldedit.util.formatting.text.format.TextColor;
-import com.sk89q.worldedit.util.formatting.text.format.TextDecoration;
 import com.sk89q.worldedit.util.formatting.text.serializer.legacy.LegacyComponentSerializer;
 import com.sk89q.worldedit.world.entity.EntityType;
 import com.sk89q.worldedit.world.gamemode.GameMode;
@@ -214,34 +212,6 @@ public final class Flags {
     public static final IntegerFlag MIN_FOOD = register(new IntegerFlag("feed-min-hunger"), f -> f.setSuggestedValues(VITALS_MINS));
     public static final IntegerFlag MAX_FOOD = register(new IntegerFlag("feed-max-hunger"), f -> f.setSuggestedValues(VITALS_MAXS));
 
-    // deny messages
-    /**
-     * @deprecated The type of this flag will change from a StringFlag to a ComponentFlag to support JSON text
-     *              in a future release. If you depend on the type of this flag, take proper precaution for future breakage.
-     */
-    @Deprecated
-    public static final StringFlag DENY_MESSAGE = register(new StringFlag("deny-message",
-            LegacyComponentSerializer.INSTANCE.serialize(TextComponent.of("").append(TextComponent.of("Hey!",
-                    TextColor.RED, Sets.newHashSet(TextDecoration.BOLD)))
-                    .append(TextComponent.of(" Sorry, but you can't %what% here.", TextColor.GRAY)))));
-    /**
-     * @deprecated The type of this flag will change from a StringFlag to a ComponentFlag to support JSON text
-     *              in a future release. If you depend on the type of this flag, take proper precaution for future breakage.
-     */
-    @Deprecated
-    public static final StringFlag ENTRY_DENY_MESSAGE = register(new StringFlag("entry-deny-message",
-            LegacyComponentSerializer.INSTANCE.serialize(TextComponent.of("").append(TextComponent.of("Hey!",
-                    TextColor.RED, Sets.newHashSet(TextDecoration.BOLD)))
-                    .append(TextComponent.of(" You are not permitted to enter this area.", TextColor.GRAY)))));
-    /**
-     * @deprecated The type of this flag will change from a StringFlag to a ComponentFlag to support JSON text
-     *              in a future release. If you depend on the type of this flag, take proper precaution for future breakage.
-     */
-    @Deprecated
-    public static final StringFlag EXIT_DENY_MESSAGE = register(new StringFlag("exit-deny-message",
-            LegacyComponentSerializer.INSTANCE.serialize(TextComponent.of("").append(TextComponent.of("Hey!",
-                    TextColor.RED, Sets.newHashSet(TextDecoration.BOLD)))
-                    .append(TextComponent.of(" You are not permitted to leave this area.", TextColor.GRAY)))));
 
     private Flags() {
     }

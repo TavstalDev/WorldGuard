@@ -49,23 +49,15 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 
 /**
  * Handles all events thrown in relation to a player.
@@ -146,7 +138,7 @@ public class WorldGuardPlayerListener extends AbstractListener {
             ApplicableRegionSet chatFrom = query.getApplicableRegions(localPlayer.getLocation());
 
             if (!chatFrom.testState(localPlayer, Flags.SEND_CHAT)) {
-                String message = chatFrom.queryValue(localPlayer, Flags.DENY_MESSAGE);
+                String message = chatFrom.queryValue(localPlayer, WorldGuard.getInstance().getPlatform().getGlobalStateManager().denyMessageFlag);
                 RegionProtectionListener.formatAndSendDenyMessage("chat", localPlayer, message);
                 event.setCancelled(true);
                 return;
@@ -372,10 +364,10 @@ public class WorldGuardPlayerListener extends AbstractListener {
                     String message = null;
                     if (!setFrom.testState(localPlayer, Flags.ENDERPEARL)) {
                         cancel = true;
-                        message = setFrom.queryValue(localPlayer, Flags.EXIT_DENY_MESSAGE);
+                        message = setFrom.queryValue(localPlayer, WorldGuard.getInstance().getPlatform().getGlobalStateManager().exitDEnyMessageFlag);
                     } else if (!set.testState(localPlayer, Flags.ENDERPEARL)) {
                         cancel = true;
-                        message = set.queryValue(localPlayer, Flags.ENTRY_DENY_MESSAGE);
+                        message = set.queryValue(localPlayer, WorldGuard.getInstance().getPlatform().getGlobalStateManager().entryDenyMessageFlag);
                     }
                     if (cancel) {
                         if (message != null && !message.isEmpty()) {
@@ -391,10 +383,10 @@ public class WorldGuardPlayerListener extends AbstractListener {
                     String message = null;
                     if (!setFrom.testState(localPlayer, Flags.CHORUS_TELEPORT)) {
                         cancel = true;
-                        message = setFrom.queryValue(localPlayer, Flags.EXIT_DENY_MESSAGE);
+                        message = setFrom.queryValue(localPlayer, WorldGuard.getInstance().getPlatform().getGlobalStateManager().exitDEnyMessageFlag);
                     } else if (!set.testState(localPlayer, Flags.CHORUS_TELEPORT)) {
                         cancel = true;
-                        message = set.queryValue(localPlayer, Flags.ENTRY_DENY_MESSAGE);
+                        message = set.queryValue(localPlayer, WorldGuard.getInstance().getPlatform().getGlobalStateManager().entryDenyMessageFlag);
                     }
                     if (cancel) {
                         if (message != null && !message.isEmpty()) {
@@ -429,7 +421,7 @@ public class WorldGuardPlayerListener extends AbstractListener {
             CommandFilter test = new CommandFilter(allowedCommands, blockedCommands);
 
             if (!test.apply(event.getMessage())) {
-                String message = set.queryValue(localPlayer, Flags.DENY_MESSAGE);
+                String message = set.queryValue(localPlayer, WorldGuard.getInstance().getPlatform().getGlobalStateManager().denyMessageFlag);
                 RegionProtectionListener.formatAndSendDenyMessage("use " + event.getMessage(), localPlayer, message);
                 event.setCancelled(true);
                 return;
